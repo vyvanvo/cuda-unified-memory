@@ -133,7 +133,7 @@ struct DataElement : public Managed
 
 __global__ 
 void Kernel_by_pointer(DataElement *elem) {
-  printf("On device by pointer: name=(%d, %d, %d), value=%d\n", elem->color[0], elem->color[1], elem->color[2], elem->value);
+  printf("On device by pointer: color=(%d, %d, %d), value=%d\n", elem->color[0], elem->color[1], elem->color[2], elem->value);
 
   elem->color[0] = 255;
   elem->value+=10;
@@ -141,7 +141,7 @@ void Kernel_by_pointer(DataElement *elem) {
 
 __global__ 
 void Kernel_by_ref(DataElement &elem) {
-  printf("On device by ref: name=(%d, %d, %d), value=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value);
+  printf("On device by ref: color=(%d, %d, %d), value=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value);
 
   elem.color[1] = 255;
   elem.value+=20;
@@ -149,7 +149,7 @@ void Kernel_by_ref(DataElement &elem) {
 
 __global__ 
 void Kernel_by_value(DataElement elem) {
-  printf("On device by value: name=(%d, %d, %d), value=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value);
+  printf("On device by value: color=(%d, %d, %d), value=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value);
 
   elem.color[2] = 255;
   elem.value+=30;
@@ -193,20 +193,20 @@ int main(void)
 
   e->value = 10;
 
-  printf("On host (print): name=(%d, %d, %d), value=%d\n", e->color[0], e->color[1], e->color[2], e->value);
+  printf("On host (print): color=(%d, %d, %d), value=%d\n", e->color[0], e->color[1], e->color[2], e->value);
   
   
   launch_by_pointer(e);
 
-  printf("On host (after by-pointer): name=(%d, %d, %d), value=%d\n", e->color[0], e->color[1], e->color[2], e->value);
+  printf("On host (after by-pointer): color=(%d, %d, %d), value=%d\n", e->color[0], e->color[1], e->color[2], e->value);
 
   launch_by_ref(*e);
 
-  printf("On host (after by-ref): name=(%d, %d, %d), value=%d\n", e->color[0], e->color[1], e->color[2], e->value);
+  printf("On host (after by-ref): color=(%d, %d, %d), value=%d\n", e->color[0], e->color[1], e->color[2], e->value);
 
   launch_by_value(*e);
 
-  printf("On host (after by-value): name=(%d, %d, %d), value=%d\n", e->color[0], e->color[1], e->color[2], e->value);
+  printf("On host (after by-value): color=(%d, %d, %d), value=%d\n", e->color[0], e->color[1], e->color[2], e->value);
 
   delete e;
 
