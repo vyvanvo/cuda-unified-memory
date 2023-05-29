@@ -26,7 +26,7 @@
 CUDA_ARCH_FLAGS := -arch=sm_35
 CC_FLAGS += $(CUDA_ARCH_FLAGS)
 
-EXE = dataElem dataElem2 dataElem3 dataElem4
+EXE = dataElem dataElem2 dataElem3 dataElem4 dataElem5
 
 all: $(EXE)
 
