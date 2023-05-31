@@ -75,9 +75,12 @@ class Color : public Managed
 
       _realloc();
 
-      for(int i = 0; i < 3; i++) {
+      /*for(int i = 0; i < 3; i++) {
         data[i] = s[i];
       }
+      */
+
+      memcpy(data, s, sizeof(int)*length);
 
     }
 
@@ -88,9 +91,11 @@ class Color : public Managed
 
       _realloc();
 
-      for(int i = 0; i < 3; i++) {
+      /*for(int i = 0; i < 3; i++) {
         data[i] = s.data[i];
-      }
+      }*/
+
+      memcpy(data, s.data, sizeof(int)*3);
       
     }
     
@@ -99,14 +104,16 @@ class Color : public Managed
     }
 
     // Assignment operator
-    Color& operator=(const Color* s) {
+    Color& operator=(const int* s) {
       length = 3;
       //data = new int[3]; 
       _realloc();
 
-      for(int i = 0; i < 3; i++) {
+      /*for(int i = 0; i < 3; i++) {
         data[i] = s->data[i];
-      }
+      }*/
+
+      memcpy(data, s, sizeof(int)*length);
 
       return *this;
     }
@@ -156,8 +163,8 @@ void Kernel_by_value(DataElement elem) {
 }
 
 void launch_by_pointer(DataElement *elem) {
-  dim3 dim_grid(1, 0, 0);
-  dim3 dim_block(1, 0, 0);
+  dim3 dim_grid(1, 1, 1);
+  dim3 dim_block(1, 1, 1);
 
   //printf("launch by pointer: name=(%d, %d, %d), value=%d\n", elem->color[0], elem->color[1], elem->color[2], elem->value);
   Kernel_by_pointer<<< dim_grid, dim_block >>>(elem);
@@ -165,8 +172,8 @@ void launch_by_pointer(DataElement *elem) {
 }
 
 void launch_by_ref(DataElement &elem) {
-  dim3 dim_grid(1, 0, 0);
-  dim3 dim_block(1, 0, 0);
+  dim3 dim_grid(1, 1, 1);
+  dim3 dim_block(1, 1, 1);
 
   //printf("launch by ref: name=(%d, %d, %d), value=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value);
   Kernel_by_ref<<< dim_grid, dim_block >>>(elem);
@@ -174,8 +181,8 @@ void launch_by_ref(DataElement &elem) {
 }
 
 void launch_by_value(DataElement elem) {
-  dim3 dim_grid(1, 0, 0);
-  dim3 dim_block(1, 0, 0);
+  dim3 dim_grid(1, 1, 1);
+  dim3 dim_block(1, 1, 1);
 
   //printf("launch by value: name=(%d, %d, %d), value=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value);
   Kernel_by_value<<< dim_grid, dim_block >>>(elem);
@@ -186,6 +193,7 @@ void launch_by_value(DataElement elem) {
 int main(void)
 {
   DataElement *e = new DataElement;
+
   
   for (int i = 0; i < 3; i++) {
     e->color[i] = 0;
