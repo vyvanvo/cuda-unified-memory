@@ -13,6 +13,7 @@ struct vec: public Managed
 {
     T x[n];
 
+    //initializing vec
     vec()
     {make_zero();}
 
@@ -29,6 +30,8 @@ struct vec: public Managed
     explicit vec(const vec<U,n>& v)
     {for(int i = 0; i < n; i++) x[i] = (T)v.x[i];}
 
+    //functions
+    __host__ __device__
     void make_zero()
     {fill(0);}
 
@@ -199,7 +202,10 @@ void Kernel_by_pointer(DataElement *elem, DataElement *elem2) {
   
   //elem->color[0] = 255;
   elem->value+=10;
+
+  vec3 color2 = {100, 100, 100};
   elem->color += elem2->color;
+  elem->color += color2;
 
   printf("On device by pointer (after changes): color=(%.2f, %.2f, %.2f), value=%d\n", elem->color[0], elem->color[1], elem->color[2], elem->value);
 }
