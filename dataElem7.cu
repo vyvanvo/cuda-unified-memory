@@ -52,6 +52,7 @@ class Color : public Managed
 {
   protected:
     int length;
+    int count;
     int *data;
 
     void _realloc() {
@@ -66,12 +67,14 @@ class Color : public Managed
   public:
     Color() {
       length = 3;
+      count = 0;
       //data = new int[3];
       _realloc();
     }
     
     // Constructor for C-string initializer
     Color(const int *s) {
+      count = 0;
       length = 3;
       //data = new int[3]; 
 
@@ -88,6 +91,7 @@ class Color : public Managed
 
     // Copy constructor
     Color(const Color& s) {
+      count = 0;
       length = 3;
       //data = new int[3]; 
 
@@ -97,7 +101,7 @@ class Color : public Managed
         data[i] = s.data[i];
       }*/
 
-      memcpy(data, s.data, sizeof(int)*3);
+      memcpy(data, s.data, sizeof(int)*length);
       
     }
     
@@ -107,6 +111,7 @@ class Color : public Managed
 
     // Assignment operator
     Color& operator=(const int* s) {
+      count = 0;
       length = 3;
       //data = new int[3]; 
       _realloc();
@@ -132,7 +137,7 @@ class Color : public Managed
 
     // get length
     __host__ __device__
-    int get_length() { return length; }
+    int get_count() { return count; }
 
     // virtual function add
     __host__ __device__
@@ -146,7 +151,7 @@ class Red: public Color, public Managed {
 
   public:
     __host__ __device__
-    void add() { length+=10; }
+    void add() { count+=10; }
 };
 
 class Yellow: public Color, public Managed {
@@ -155,7 +160,7 @@ class Yellow: public Color, public Managed {
 
   public:
     __host__ __device__
-    void add() { length+=20; }
+    void add() { count+=20; }
 };
 
 class Blue: public Color, public Managed {
@@ -164,7 +169,7 @@ class Blue: public Color, public Managed {
 
   public:
     __host__ __device__
-    void add() { length+=30; }
+    void add() { count+=30; }
 };
 
 
@@ -177,35 +182,32 @@ struct DataElement : public Managed
 
 __global__ 
 void Kernel_by_pointer(DataElement *elem) {
-  //printf("On device by pointer: color=(%d, %d, %d), value=%d, color_length=%d\n", elem->color[0], elem->color[1], elem->color[2], elem->value, elem->color.get_length());
-
+  printf("On device by pointer: color_count=%d\n", elem->color.get_count());
   elem->color[0] = 255;
   elem->value+=10;
   elem->color.add();
 
-  printf("On device by pointer: color=(%d, %d, %d), value=%d, color_length=%d\n", elem->color[0], elem->color[1], elem->color[2], elem->value, elem->color.get_length());
+  printf("On device by pointer: color=(%d, %d, %d), value=%d, color_count=%d\n", elem->color[0], elem->color[1], elem->color[2], elem->value, elem->color.get_count());
 }
 
 __global__ 
 void Kernel_by_ref(DataElement &elem) {
-  //printf("On device by ref: color=(%d, %d, %d), value=%d, color_length=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value, elem.color.get_length());
-
+  printf("On device by ref: color_count=%d\n", elem.color.get_count());
   elem.color[1] = 255;
   elem.value+=20;
   elem.color.add();
 
-  printf("On device by ref: color=(%d, %d, %d), value=%d, color_length=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value, elem.color.get_length());
+  printf("On device by ref: color=(%d, %d, %d), value=%d, color_count=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value, elem.color.get_count());
 }
 
 __global__ 
 void Kernel_by_value(DataElement elem) {
-  //printf("On device by value: color=(%d, %d, %d), value=%d, color_length=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value, elem.color.get_length());
-
+  printf("On device by value: color=(%d, %d, %d), value=%d, color_count=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value, elem.color.get_count());
   elem.color[2] = 255;
   elem.value+=30;
   elem.color.add();
 
-  printf("On device by ref: color=(%d, %d, %d), value=%d, color_length=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value, elem.color.get_length());
+  printf("On device by value: color=(%d, %d, %d), value=%d, color_count=%d\n", elem.color[0], elem.color[1], elem.color[2], elem.value, elem.color.get_count());
 }
 
 void launch_by_pointer(DataElement *elem) {
@@ -247,22 +249,22 @@ int main(void)
 
   e->value = 10;
 
-  printf("On host (print): color=(%d, %d, %d), value=%d, color_length=%d\n", e->color[0], e->color[1], e->color[2], e->value, e->color.get_length());
-  //e->color.add();
-
-  printf("On host (after add op): color=(%d, %d, %d), value=%d, color_length=%d\n", e->color[0], e->color[1], e->color[2], e->value, e->color.get_length());
+  printf("On host (print): color=(%d, %d, %d), value=%d, color_count=%d\n", e->color[0], e->color[1], e->color[2], e->value, e->color.get_count());
+  
+  e->color.add();
+  printf("On host (after add op): color=(%d, %d, %d), value=%d, color_count=%d\n", e->color[0], e->color[1], e->color[2], e->value, e->color.get_count());
 
   launch_by_pointer(e);
 
-  printf("On host (after by-pointer): color=(%d, %d, %d), value=%d, , color_length=%d\n", e->color[0], e->color[1], e->color[2], e->value, e->color.get_length());
+  printf("On host (after by-pointer): color=(%d, %d, %d), value=%d, color_count=%d\n", e->color[0], e->color[1], e->color[2], e->value, e->color.get_count());
 
   launch_by_ref(*e);
 
-  printf("On host (after by-ref): color=(%d, %d, %d), value=%d, , color_length=%d\n", e->color[0], e->color[1], e->color[2], e->value, e->color.get_length());
+  printf("On host (after by-ref): color=(%d, %d, %d), value=%d, color_count=%d\n", e->color[0], e->color[1], e->color[2], e->value, e->color.get_count());
 
   launch_by_value(*e);
 
-  printf("On host (after by-value): color=(%d, %d, %d), value=%d, , color_length=%d\n", e->color[0], e->color[1], e->color[2], e->value, e->color.get_length());
+  printf("On host (after by-value): color=(%d, %d, %d), value=%d, color_count=%d\n", e->color[0], e->color[1], e->color[2], e->value, e->color.get_count());
 
   delete e;
 
