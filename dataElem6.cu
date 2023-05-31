@@ -28,6 +28,8 @@
 #include <stdio.h>
 #include "managed.h"
 
+//SEPARATE MANAGED.H
+
 // Managed Base Class -- inherit from this to automatically 
 // allocate objects in Unified Memory
 /*class Managed 

@@ -27,6 +27,8 @@
 #include <string.h>
 #include <stdio.h>
 
+//CLASS DATA ELEM WITH STRING - DEEP COPY
+
 // Managed Base Class -- inherit from this to automatically 
 // allocate objects in Unified Memory
 class Managed 
